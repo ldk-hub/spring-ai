@@ -1,0 +1,17 @@
+# Antigravity Rules
+
+1.  **언어 (Language)**:
+    - 모든 답변과 설명은 **반드시 한국어(Korean)**로 해주세요.
+    - 코드는 영어로 작성하되, 주석은 한국어로 작성해주세요.
+
+2.  **자바 문법 (Java Syntax)**:
+    - **최신 자바 문법(Modern Java)**을 적극적으로 사용해주세요.
+    - 예: `var`, `record`, `switch expression`, `text block`, `sealed class`, `pattern matching` 등.
+    - 프로젝트 설정(build.gradle 등)에 맞춰 가능한 최신 기능을 우선적으로 사용합니다.
+
+3.  **주석 (Comments)**:
+    - **주요 로직, 복잡한 비즈니스 로직, 또는 중요한 설정 구간**에는 반드시 **한국어 주석**을 추가하여 설명을 덧붙여주세요.
+    - 단순하거나 명백한 코드(Getter/Setter 등)에는 주석을 생략해도 됩니다.
+
+4.  **코드 스타일 (Code Style)**:
+    - 가독성을 중시하며, 클린 코드 원칙을 따릅니다.
