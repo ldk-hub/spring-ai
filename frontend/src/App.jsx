@@ -6,6 +6,7 @@ function App() {
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false) // Mobile sidebar state
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
@@ -49,48 +50,101 @@ function App() {
   }
 
   return (
-    <div className="chat-container">
-      <header className="chat-header">
-        Spring AI RAG Chat
-      </header>
-      
-      <div className="messages-area">
-        {messages.map((msg, index) => (
-          <div 
-            key={index} 
-            className={`message ${msg.isUser ? 'user' : 'bot'}`}
-          >
-            {msg.text}
-          </div>
-        ))}
-        {isLoading && (
-          <div className="message bot">
-            <div className="loading-dots">
-              <div className="dot"></div>
-              <div className="dot"></div>
-              <div className="dot"></div>
+    <div className="app-container">
+      {/* Sidebar */}
+      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <span>Gemini Pro</span>
+          <button className="menu-btn" onClick={() => setIsSidebarOpen(false)}>✕</button>
+        </div>
+        <button className="new-chat-btn">
+          <span>+</span> 새로운 채팅
+        </button>
+        {/* Chat History could go here */}
+      </aside>
+
+      {/* Main Content */}
+      <main className="main-content">
+        {/* Header */}
+        <header className="chat-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+            <div className="model-selector">
+              Spring AI RAG <span style={{ fontSize: '0.8em', opacity: 0.6 }}>▼</span>
             </div>
           </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+          {/* User Profile / Settings could go here */}
+        </header>
 
-      <form className="input-area" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          className="chat-input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="메시지를 입력하세요..."
-          disabled={isLoading}
+        {/* Chat Area */}
+        <div className="messages-area">
+          {messages.map((msg, index) => (
+            <div key={index} className="message-wrapper">
+              {/* Icons */}
+              <div className={`message-icon ${msg.isUser ? 'user-icon' : 'bot-icon'}`}>
+                {msg.isUser ? 'U' : 'AI'}
+              </div>
+
+              <div className="message-content">
+                <div className="message-sender">{msg.isUser ? 'User' : 'Assistant'}</div>
+                {msg.text}
+              </div>
+            </div>
+          ))}
+
+          {isLoading && (
+            <div className="message-wrapper">
+              <div className="message-icon bot-icon">AI</div>
+              <div className="message-content">
+                <div className="message-sender">Assistant</div>
+                <div className="loading-dots">
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Footer / Input Area */}
+        <div className="input-area-wrapper">
+          <form className="input-container" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              className="chat-input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="무엇을 도와드릴까요?"
+              disabled={isLoading}
+            />
+            <button type="submit" className="send-btn" disabled={isLoading || !input.trim()}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          </form>
+        </div>
+      </main>
+
+      {/* Overlay for mobile when sidebar is open */}
+      {isSidebarOpen && (
+        <div
+          style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 15
+          }}
+          onClick={() => setIsSidebarOpen(false)}
         />
-        <button type="submit" className="send-btn" disabled={isLoading || !input.trim()}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-      </form>
+      )}
     </div>
   )
 }
