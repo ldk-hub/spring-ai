@@ -15,16 +15,20 @@ function App() {
     scrollToBottom()
   }, [messages])
 
+  // 메시지 전송 및 API 호출을 처리하는 핵심 함수
   const sendMessage = async (messageText) => {
+    // 빈 메시지나 로딩 중일 경우 실행하지 않음
     if (!messageText.trim() || isLoading) return
 
     const userMessage = messageText.trim()
     setInput('')
+    // 사용자 메시지를 화면에 즉시 표시
     setMessages(prev => [...prev, { text: userMessage, isUser: true }])
     setIsLoading(true)
 
     try {
-      const response = await fetch('http://localhost:8080/api/chat', {
+      // API 호출: 상대 경로를 사용하여 배포 환경에서도 동작하도록 함
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,16 +36,20 @@ function App() {
         body: JSON.stringify({ message: userMessage }),
       })
 
+      // 응답 상태 확인
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
 
+      // JSON 데이터 파싱 및 봇 응답 표시
       const data = await response.json()
       setMessages(prev => [...prev, { text: data.response, isUser: false }])
     } catch (error) {
+      // 에러 처리: 콘솔에 로그를 남기고 사용자에게 에러 메시지 표시
       console.error('Error:', error)
       setMessages(prev => [...prev, { text: '죄송합니다. 오류가 발생했습니다.', isUser: false }])
     } finally {
+      // 로딩 상태 해제
       setIsLoading(false)
     }
   }
