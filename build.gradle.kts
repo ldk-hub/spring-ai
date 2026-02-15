@@ -23,6 +23,7 @@ extra["springAiVersion"] = "2.0.0-M2"
 dependencies {
 	implementation("org.springframework.ai:spring-ai-advisors-vector-store")
 	implementation("org.springframework.ai:spring-ai-starter-model-openai")
+	implementation("org.springframework.ai:spring-ai-google-gemini-spring-boot-starter")
 	implementation("org.springframework.ai:spring-ai-starter-vector-store-pgvector")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

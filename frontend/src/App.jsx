@@ -1,12 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 
 function App() {
-  const [messages, setMessages] = useState([
-    { text: '안녕하세요! 무엇을 도와드릴까요?', isUser: false }
-  ])
+  const [messages, setMessages] = useState([]) // Start empty for Welcome Screen
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false) // Mobile sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
@@ -17,11 +15,10 @@ function App() {
     scrollToBottom()
   }, [messages])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!input.trim() || isLoading) return
+  const sendMessage = async (messageText) => {
+    if (!messageText.trim() || isLoading) return
 
-    const userMessage = input.trim()
+    const userMessage = messageText.trim()
     setInput('')
     setMessages(prev => [...prev, { text: userMessage, isUser: true }])
     setIsLoading(true)
@@ -49,6 +46,24 @@ function App() {
     }
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    sendMessage(input)
+  }
+
+  const handleNewChat = () => {
+    setMessages([])
+    setInput('')
+    setIsSidebarOpen(false) // Close sidebar on mobile if open
+  }
+
+  const suggestions = [
+    "Spring AI란 무엇인가요?",
+    "RAG 시스템 구축 방법 알려줘",
+    "Java 최신 기능 요약해줘",
+    "오늘의 날씨는?"
+  ]
+
   return (
     <div className="app-container">
       {/* Sidebar */}
@@ -57,10 +72,16 @@ function App() {
           <span>Gemini Pro</span>
           <button className="menu-btn" onClick={() => setIsSidebarOpen(false)}>✕</button>
         </div>
-        <button className="new-chat-btn">
+        <button className="new-chat-btn" onClick={handleNewChat}>
           <span>+</span> 새로운 채팅
         </button>
-        {/* Chat History could go here */}
+        {/* Chat History placeholders could go here */}
+        <div className="history-section">
+          <div className="history-label">최근 활동</div>
+          {/* Mock items */}
+          <div className="history-item">Spring AI 프로젝트 설정</div>
+          <div className="history-item">Java 스트림 API 예제</div>
+        </div>
       </aside>
 
       {/* Main Content */}
@@ -79,39 +100,75 @@ function App() {
               Spring AI RAG <span style={{ fontSize: '0.8em', opacity: 0.6 }}>▼</span>
             </div>
           </div>
-          {/* User Profile / Settings could go here */}
         </header>
 
         {/* Chat Area */}
         <div className="messages-area">
-          {messages.map((msg, index) => (
-            <div key={index} className="message-wrapper">
-              {/* Icons */}
-              <div className={`message-icon ${msg.isUser ? 'user-icon' : 'bot-icon'}`}>
-                {msg.isUser ? 'U' : 'AI'}
-              </div>
-
-              <div className="message-content">
-                <div className="message-sender">{msg.isUser ? 'User' : 'Assistant'}</div>
-                {msg.text}
+          {messages.length === 0 ? (
+            <div className="welcome-section">
+              <h1 className="welcome-title">
+                <span className="gradient-text">안녕하세요, User님</span>
+                <br />
+                <span className="sub-text">오늘 무엇을 도와드릴까요?</span>
+              </h1>
+              <div className="suggestions-grid">
+                {suggestions.map((text, index) => (
+                  <button key={index} className="suggestion-card" onClick={() => sendMessage(text)}>
+                    <p>{text}</p>
+                    <div className="icon-wrapper">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 4L12 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M18 14L12 20L6 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M4 4L20 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg> {/* Simple icon, can be replaced */}
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
-          ))}
+          ) : (
+            <>
+              {messages.map((msg, index) => (
+                <div key={index} className={`message-wrapper ${msg.isUser ? 'user-msg' : 'bot-msg'}`}>
+                  {/* Avatar for Bot only */}
+                  {!msg.isUser && (
+                    <div className="message-icon bot-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                      </svg>
+                    </div>
+                  )}
 
-          {isLoading && (
-            <div className="message-wrapper">
-              <div className="message-icon bot-icon">AI</div>
-              <div className="message-content">
-                <div className="message-sender">Assistant</div>
-                <div className="loading-dots">
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                  <div className="dot"></div>
+                  <div className="message-content">
+                    {/* Only show sender name for Bot to keep User clean */}
+                    {!msg.isUser && <div className="message-sender">Gemini</div>}
+                    <div className="text-bubble">
+                      {msg.text}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              ))}
+
+              {isLoading && (
+                <div className="message-wrapper bot-msg">
+                  <div className="message-icon bot-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                    </svg>
+                  </div>
+                  <div className="message-content">
+                    <div className="message-sender">Gemini</div>
+                    <div className="loading-dots">
+                      <div className="dot"></div>
+                      <div className="dot"></div>
+                      <div className="dot"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </>
           )}
-          <div ref={messagesEndRef} />
         </div>
 
         {/* Footer / Input Area */}
@@ -122,26 +179,25 @@ function App() {
               className="chat-input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="무엇을 도와드릴까요?"
+              placeholder="여기에 프롬프트 입력"
               disabled={isLoading}
             />
             <button type="submit" className="send-btn" disabled={isLoading || !input.trim()}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor" />
               </svg>
             </button>
           </form>
+          <div className="footer-info">
+            Gemini는 실수를 할 수 있습니다. 중요한 정보는 확인해 주세요.
+          </div>
         </div>
       </main>
 
-      {/* Overlay for mobile when sidebar is open */}
+      {/* Overlay for mobile */}
       {isSidebarOpen && (
         <div
-          style={{
-            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 15
-          }}
+          className="mobile-overlay"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
