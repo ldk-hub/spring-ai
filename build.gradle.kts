@@ -16,14 +16,15 @@ java {
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo.spring.io/milestone") }
+	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
-extra["springAiVersion"] = "2.0.0-M2"
+extra["springAiVersion"] = "1.0.0-M6"
 
 dependencies {
-	implementation("org.springframework.ai:spring-ai-advisors-vector-store")
-	// implementation("org.springframework.ai:spring-ai-starter-model-openai") // Removed to avoid conflict
-	implementation("org.springframework.ai:spring-ai-starter-model-vertex-ai-gemini") // Correct Vertex AI starter
+	// implementation("org.springframework.ai:spring-ai-advisors-vector-store:${property("springAiVersion")}") // May be in core
+	implementation("org.springframework.ai:spring-ai-starter-openai")
 	implementation("org.springframework.ai:spring-ai-starter-vector-store-pgvector")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

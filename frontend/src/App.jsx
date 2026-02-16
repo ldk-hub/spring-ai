@@ -7,6 +7,15 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const messagesEndRef = useRef(null)
 
+  // Chat ID state for conversation history
+  const [chatId, setChatId] = useState(() => {
+    return localStorage.getItem('chatId') || crypto.randomUUID()
+  })
+
+  useEffect(() => {
+    localStorage.setItem('chatId', chatId)
+  }, [chatId])
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -33,7 +42,10 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({
+          message: userMessage,
+          chatId: chatId // Send connection ID for memory
+        }),
       })
 
       // 응답 상태 확인
@@ -62,6 +74,8 @@ function App() {
   const handleNewChat = () => {
     setMessages([])
     setInput('')
+    const newChatId = crypto.randomUUID()
+    setChatId(newChatId)
     setIsSidebarOpen(false) // Close sidebar on mobile if open
   }
 
