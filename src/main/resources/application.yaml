@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: ai
+  ai:
+    openai:
+      # Gemini OpenAI 호환 API 기본 URL 및 공통 API 키
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai
+      api-key: AIzaSyC_IQunw6TDdkHOjxEUFvHEhO150A1wXmg
+      chat:
+        options:
+          model: gemini-1.5-flash
+      # Gemini 임베딩 모델 전용 base-url 분리 설정 (404 방지)
+      embedding:
+        base-url: https://generativelanguage.googleapis.com/v1beta/openai
+        api-key: AIzaSyC_IQunw6TDdkHOjxEUFvHEhO150A1wXmg
+        options:
+          model: text-embedding-004
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
