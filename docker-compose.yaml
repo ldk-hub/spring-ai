@@ -6,7 +6,7 @@ services:
       - "5433:5432"
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:password}
       - POSTGRES_DB=vector_store
     # 컨테이너 재시작 시에도 벡터 데이터가 유지되도록 볼륨 마운트
     volumes:
