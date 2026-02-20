@@ -19,7 +19,8 @@ public class ChatController {
     @PostMapping
     public Map<String, String> chat(@RequestBody Map<String, String> payload) {
         String message = payload.get("message");
-        String response = ragService.chat(message);
+        String chatId = payload.getOrDefault("chatId", "default"); // Default for now, frontend should send it
+        String response = ragService.chat(chatId, message);
         return Map.of("response", response);
     }
 }
