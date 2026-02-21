@@ -12,8 +12,43 @@ function App() {
     return localStorage.getItem('chatId') || crypto.randomUUID()
   })
 
+  const [apiHealth, setApiHealth] = useState(null)
+
+  useEffect(() => {
+    // API 상태 확인
+    fetch('/api/chat/health')
+      .then(res => res.json())
+      .then(data => setApiHealth(data.status === 'UP'))
+      .catch(() => setApiHealth(false))
+  }, [])
+
   useEffect(() => {
     localStorage.setItem('chatId', chatId)
+
+    // 대화 이력 불러오기
+    const fetchHistory = async () => {
+      try {
+        const response = await fetch(`/api/chat/history?chatId=${chatId}`)
+        if (response.ok) {
+          const data = await response.json()
+          if (data && data.length > 0) {
+            const formattedMessages = data.map(msg => ({
+              text: msg.content,
+              isUser: msg.type === 'user' || msg.type === 'USER'
+            }))
+            setMessages(formattedMessages)
+          } else {
+            setMessages([])
+          }
+        }
+      } catch (error) {
+        console.error('이력 불러오기 실패:', error)
+      }
+    }
+
+    if (chatId) {
+      fetchHistory()
+    }
   }, [chatId])
 
   const scrollToBottom = () => {
@@ -110,7 +145,7 @@ function App() {
       <main className="main-content">
         {/* Header */}
         <header className="chat-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '100%' }}>
             <button className="menu-btn" onClick={() => setIsSidebarOpen(true)}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M3 12H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -121,6 +156,12 @@ function App() {
             <div className="model-selector">
               Spring AI RAG <span style={{ fontSize: '0.8em', opacity: 0.6 }}>▼</span>
             </div>
+            {apiHealth !== null && (
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: apiHealth ? '#4caf50' : '#f44336', fontWeight: 500, paddingRight: '1rem' }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: apiHealth ? '#4caf50' : '#f44336' }}></div>
+                {apiHealth ? 'API 연결됨' : 'API 연결 실패'}
+              </div>
+            )}
           </div>
         </header>
 

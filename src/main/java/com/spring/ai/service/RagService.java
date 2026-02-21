@@ -2,8 +2,12 @@ package com.spring.ai.service;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Gemini 채팅 서비스입니다.
@@ -18,11 +22,14 @@ public class RagService {
 
     // 채팅 클라이언트 (대화 메모리 어드바이저 포함)
     private final ChatClient chatClient;
+    // 대화 이력 저장을 위한 메모리
+    private final ChatMemory chatMemory;
 
     public RagService(ChatClient.Builder builder) {
+        this.chatMemory = new InMemoryChatMemory();
         this.chatClient = builder
                 // 대화 메모리 어드바이저: 이전 대화 맥락을 유지합니다
-                .defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory()))
+                .defaultAdvisors(new MessageChatMemoryAdvisor(this.chatMemory))
                 .build();
     }
 
@@ -40,5 +47,16 @@ public class RagService {
                 .advisors(a -> a.param(MessageChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY, chatId))
                 .call()
                 .content();
+    }
+
+    /**
+     * 특정 대화 ID의 전체 채팅 이력을 조회합니다.
+     *
+     * @param chatId 대화 식별자
+     * @return 대화 이력 메시지 리스트
+     */
+    public List<Message> getHistory(String chatId) {
+        // 최근 100개의 대화 이력을 가져옵니다
+        return this.chatMemory.get(chatId, 100);
     }
 }
