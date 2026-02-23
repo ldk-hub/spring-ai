@@ -127,7 +127,7 @@ RAG 검색을 위한 문서를 벡터 저장소에 저장합니다.
 
 ## 📂 프로젝트 구조
 
-```
+```text
 root/
 ├── src/main/java/com/spring/ai/
 │   ├── controller/

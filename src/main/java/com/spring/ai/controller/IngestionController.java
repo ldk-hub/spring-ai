@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 문서를 벡터 스토어에 등록(인제스트)하는 REST 컨트롤러입니다.
- * POST /api/ingest 로 텍스트를 전달하면 임베딩 후 pgvector에 저장됩니다.
+ * POST /api/ingest 로 텍스트를 전달하면 임베딩 후 설정된 인메모리 SimpleVectorStore에 저장됩니다.
  */
 @RestController
 @RequestMapping("/api/ingest")

@@ -26,28 +26,36 @@ function App() {
     localStorage.setItem('chatId', chatId)
 
     // 대화 이력 불러오기
+    let ignore = false;
+
     const fetchHistory = async () => {
       try {
         const response = await fetch(`/api/chat/history?chatId=${chatId}`)
         if (response.ok) {
           const data = await response.json()
-          if (data && data.length > 0) {
-            const formattedMessages = data.map(msg => ({
-              text: msg.content,
-              isUser: msg.type === 'user' || msg.type === 'USER'
-            }))
-            setMessages(formattedMessages)
-          } else {
-            setMessages([])
+          if (!ignore) {
+            if (data && data.length > 0) {
+              const formattedMessages = data.map(msg => ({
+                text: msg.content,
+                isUser: msg.type === 'user' || msg.type === 'USER'
+              }))
+              setMessages(formattedMessages)
+            } else {
+              setMessages([])
+            }
           }
         }
       } catch (error) {
-        console.error('이력 불러오기 실패:', error)
+        if (!ignore) console.error('이력 불러오기 실패:', error)
       }
     }
 
     if (chatId) {
       fetchHistory()
+    }
+
+    return () => {
+      ignore = true;
     }
   }, [chatId])
 

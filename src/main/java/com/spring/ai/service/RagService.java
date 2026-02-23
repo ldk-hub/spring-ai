@@ -3,7 +3,6 @@ package com.spring.ai.service;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,52 @@ public class RagService {
     private final ChatMemory chatMemory;
 
     public RagService(ChatClient.Builder builder) {
-        this.chatMemory = new InMemoryChatMemory();
+        // 커스텀 LRU 축출 규칙을 적용한 ChatMemory 구현체를 익명 클래스로 만들어서 메모리 누수를 방지합니다.
+        // 최대 100개의 과거 대화(ChatId) 세션만 유지합니다. (LRU Cache 방식)
+        this.chatMemory = new ChatMemory() {
+            private final int MAX_ENTRIES = 100;
+            // LRU 동작을 위해 accessOrder = true인 LinkedHashMap 사용
+            private final java.util.Map<String, List<Message>> lruCache = java.util.Collections
+                    .synchronizedMap(new java.util.LinkedHashMap<String, List<Message>>(16, 0.75f, true) {
+                        @Override
+                        protected boolean removeEldestEntry(java.util.Map.Entry<String, List<Message>> eldest) {
+                            return size() > MAX_ENTRIES;
+                        }
+                    });
+
+            @Override
+            public void add(String conversationId, List<Message> messages) {
+                lruCache.compute(conversationId, (k, existingMessages) -> {
+                    if (existingMessages == null) {
+                        return new java.util.ArrayList<>(messages);
+                    } else {
+                        existingMessages.addAll(messages);
+                        return existingMessages;
+                    }
+                });
+            }
+
+            @Override
+            public void add(String conversationId, Message message) {
+                add(conversationId, List.of(message));
+            }
+
+            @Override
+            public List<Message> get(String conversationId, int lastN) {
+                List<Message> messages = lruCache.get(conversationId);
+                if (messages == null || messages.isEmpty()) {
+                    return List.of();
+                }
+                int fromIndex = Math.max(0, messages.size() - lastN);
+                return new java.util.ArrayList<>(messages.subList(fromIndex, messages.size()));
+            }
+
+            @Override
+            public void clear(String conversationId) {
+                lruCache.remove(conversationId);
+            }
+        };
+
         this.chatClient = builder
                 // 대화 메모리 어드바이저: 이전 대화 맥락을 유지합니다
                 .defaultAdvisors(new MessageChatMemoryAdvisor(this.chatMemory))

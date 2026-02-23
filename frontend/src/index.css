@@ -67,7 +67,6 @@ body {
   background-color: #dde3ea;
   border-radius: 999px;
   border: none;
-  color: var(--text-primary);
   font-weight: 500;
   cursor: pointer;
   display: flex;
@@ -286,7 +285,7 @@ body {
   /* No background for Gemini icon itself, just SVG */
   color: #444746;
   /* Or gradient if using image */
-  animation: rotateIn 0.5s;
+  animation: rotate-in 0.5s;
 }
 
 .user-icon {
@@ -370,7 +369,7 @@ body {
   }
 }
 
-@keyframes rotateIn {
+@keyframes rotate-in {
   from {
     transform: rotate(-180deg);
     opacity: 0;

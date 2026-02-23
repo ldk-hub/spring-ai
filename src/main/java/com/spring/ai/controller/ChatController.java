@@ -21,9 +21,18 @@ public class ChatController {
     @PostMapping
     public Map<String, String> chat(@RequestBody Map<String, String> payload) {
         String message = payload.get("message");
+        if (message == null || message.trim().isEmpty()) {
+            throw new IllegalArgumentException("Message cannot be null or empty");
+        }
         String chatId = payload.getOrDefault("chatId", "default"); // Default for now, frontend should send it
         String response = ragService.chat(chatId, message);
         return Map.of("response", response);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return Map.of("error", ex.getMessage());
     }
 
     /**
@@ -41,7 +50,7 @@ public class ChatController {
     public List<Map<String, String>> getHistory(@RequestParam(defaultValue = "default") String chatId) {
         return ragService.getHistory(chatId).stream()
                 .map(msg -> Map.of(
-                        "type", msg.getMessageType().getValue(),
+                        "type", msg.getMessageType() != null ? msg.getMessageType().getValue() : "unknown",
                         "content", msg.getText() != null ? msg.getText() : ""))
                 .collect(Collectors.toList());
     }
