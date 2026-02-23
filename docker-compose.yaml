@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: spring-ai-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - POSTGRES_DB=vector_store
+    # 컨테이너 재시작 시에도 벡터 데이터가 유지되도록 볼륨 마운트
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+
+# 이름 있는 볼륨 선언 (Docker가 관리하는 영속 스토리지)
+volumes:
+  pgvector_data:

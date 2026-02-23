@@ -35,3 +35,15 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Secrets ###
+.env
+application-secret.yaml
+application-secret.properties
+*.key
+**/.DS_Store
+
+# Antigravity Rules & Local Config
+.cursorrules
+src/main/resources/application.yaml
+
