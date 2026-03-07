@@ -2,19 +2,34 @@
 
 Spring AI와 Google Vertex AI (Gemini)를 기반으로 구축된 RAG(Retrieval-Augmented Generation) 백엔드와 React 프론트엔드로 구성된 모바일 반응형 하이브리드 웹 애플리케이션입니다.
 
+## 📋 목차 (Table of Contents)
+- [🏗️ 아키텍처 개요](#️-아키텍처-개요)
+- [📋 사전 요구사항](#-사전-요구사항-prerequisites)
+- [🛠️ 기술 스택](#️-기술-스택-tech-stack)
+- [🚀 시작하기](#-시작하기-getting-started)
+  - [1. 데이터베이스 실행](#1-데이터베이스-실행-database)
+  - [2. 백엔드 설정 및 실행](#2-백엔드-설정-및-실행-backend)
+  - [3. 프론트엔드 설정 및 실행](#3-프론트엔드-설정-및-실행-frontend)
+- [📡 API 레퍼런스](#-api-레퍼런스)
+- [📂 프로젝트 구조](#-프로젝트-구조)
+
+---
+
 ## 🏗️ 아키텍처 개요
 
 사용자의 질문은 React 프론트엔드를 통해 전송되며, Spring Boot 백엔드에서 벡터 저장소(pgvector)를 조회하여 관련 문서를 찾습니다. 그 후, 검색된 컨텍스트와 함께 Gemini 모델에 질의하여 답변을 생성합니다.
 
 ```mermaid
-graph LR
+flowchart LR
     User[사용자] -->|질문| React[React Frontend]
     React -->|API 요청| Spring[Spring Boot Backend]
-    Spring -->|검색| DB[(PostgreSQL\npgvector)]
-    Spring -->|생성 요청\n(질문 + 컨텍스트)| Gemini[Google Vertex AI\n(Gemini Pro)]
+    Spring -->|검색| DB[(PostgreSQL<br>pgvector)]
+    Spring -->|"생성 요청<br>(질문 + 컨텍스트)"| Gemini["Google Vertex AI<br>(Gemini Pro)"]
     Gemini -->|답변| Spring
     Spring -->|최종 응답| React
 ```
+
+[🔝 목차로 돌아가기](#-목차-table-of-contents)
 
 ---
 
@@ -28,6 +43,8 @@ graph LR
 - **Google Cloud Platform (GCP) 프로젝트**
   - Vertex AI API 활성화
   - 서비스 계정 키 (JSON) 생성 및 다운로드
+
+[🔝 목차로 돌아가기](#-목차-table-of-contents)
 
 ---
 
@@ -44,6 +61,8 @@ graph LR
 - **Library**: React 19
 - **Build Tool**: Vite
 - **Styling**: CSS (Mobile Responsive Design)
+
+[🔝 목차로 돌아가기](#-목차-table-of-contents)
 
 ---
 
@@ -76,7 +95,7 @@ $env:SPRING_AI_VERTEX_AI_GEMINI_LOCATION = "us-central1"
 
 서버는 `http://localhost:8080`에서 실행됩니다.
 
-### 2. 프론트엔드 설정 및 실행 (Frontend)
+### 3. 프론트엔드 설정 및 실행 (Frontend)
 
 프론트엔드 디렉토리로 이동하여 의존성을 설치하고 개발 서버를 실행합니다.
 
@@ -86,7 +105,9 @@ npm install
 npm run dev
 ```
 
-브라우저에서 `http://localhost:5173`으로 접속하여 애플리케이션을 확인하세요.
+브라우저에서 `http://localhost:5173` (또는 실행된 포트)으로 접속하여 애플리케이션을 확인하세요.
+
+[🔝 목차로 돌아가기](#-목차-table-of-contents)
 
 ---
 
@@ -123,6 +144,8 @@ RAG 검색을 위한 문서를 벡터 저장소에 저장합니다.
   ```
 - **Response**: `200 OK`
 
+[🔝 목차로 돌아가기](#-목차-table-of-contents)
+
 ---
 
 ## 📂 프로젝트 구조
@@ -143,3 +166,5 @@ root/
 ├── build.gradle.kts                  # 백엔드 의존성 관리
 └── README.md                         # 프로젝트 문서
 ```
+
+[🔝 목차로 돌아가기](#-목차-table-of-contents)
