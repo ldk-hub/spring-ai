@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: ai-service
+  ai:
+    openai:
+      # Gemini OpenAI 호환 API 기본 URL 및 공통 API 키
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai/
+      api-key: ${GEMINI_API_KEY}
+      chat:
+        options:
+          model: gemini-3.0-flash
+          temperature: 0.7
+      embedding:
+        options:
+          model: text-embedding-004
+  datasource:
+    url: jdbc:postgresql://localhost:5433/vector_store
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true

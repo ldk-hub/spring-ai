@@ -26,10 +26,17 @@ extra["springAiVersion"] = "1.0.0-M6"
 dependencies {
 	// 서블릿 기반 MVC 웹 스택 명시 (Reactive 모드 방지)
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	// Spring Data JPA 및 JDBC
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	// Spring AI OpenAI 스타터 (Gemini의 OpenAI 호환 API와 연동)
 	implementation("org.springframework.ai:spring-ai-openai-spring-boot-starter")
-	// PostgreSQL JDBC 드라이버 (필요시 유지 또는 제거 가능, 여기서는 제거)
-	// runtimeOnly("org.postgresql:postgresql")
+	// PostgreSQL JDBC 드라이버 및 pgvector 지원
+	runtimeOnly("org.postgresql:postgresql")
+	implementation("com.pgvector:pgvector:0.1.6")
+
+    // RAG: PDF 문서 파싱 및 텍스트 추출 어드바이저
+	implementation("org.springframework.ai:spring-ai-pdf-document-reader")
+	
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
