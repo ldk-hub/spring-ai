@@ -5,7 +5,7 @@ spring:
     openai:
       # Gemini OpenAI 호환 API 기본 URL 및 공통 API 키
       base-url: https://generativelanguage.googleapis.com/v1beta/openai/
-      api-key: AIzaSyCl8pEGRezAKJxPNgiLSPNvbtFjY5Bz5L0
+      api-key: ${GEMINI_API_KEY}
       chat:
         options:
           model: gemini-3.0-flash
